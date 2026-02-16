@@ -1,31 +1,35 @@
-import Anthropic from '@anthropic-ai/sdk'
-
-function getAnthropic() {
-  // Try multiple env var names as fallback
-  const apiKey = process.env.TEST_ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY || 'placeholder-key'
-  // Always create a new instance to ensure we use the latest API key
-  return new Anthropic({ apiKey })
-}
-
 export async function callClaude(prompt: string): Promise<{ content: string; responseTime: number }> {
   const startTime = Date.now()
 
   try {
-    const anthropic = getAnthropic()
-    const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }],
+    const apiKey = process.env.TEST_ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY || 'placeholder-key'
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
     })
 
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(`${response.status} ${error.error?.message || 'Unknown error'}`)
+    }
+
+    const data = await response.json()
     const responseTime = Date.now() - startTime
-    const content = message.content[0]?.type === 'text' ? message.content[0].text : 'No response'
+    const content = data.content[0]?.text || 'No response'
 
     return { content, responseTime }
   } catch (error: any) {
     const responseTime = Date.now() - startTime
-    const errorMsg = error.message || String(error)
-    const errorDetails = error.status ? ` (${error.status})` : ''
-    throw new Error(`Claude Error: ${errorMsg}${errorDetails}`)
+    throw new Error(`Claude Error: ${error.message}`)
   }
 }
