@@ -24,6 +24,8 @@ export async function callClaude(prompt: string): Promise<{ content: string; res
     return { content, responseTime }
   } catch (error: any) {
     const responseTime = Date.now() - startTime
-    throw new Error(`Claude Error: ${error.message}`)
+    const errorMsg = error.message || String(error)
+    const errorDetails = error.status ? ` (${error.status})` : ''
+    throw new Error(`Claude Error: ${errorMsg}${errorDetails}`)
   }
 }

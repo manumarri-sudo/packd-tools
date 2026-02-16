@@ -24,6 +24,8 @@ export async function callGPT4(prompt: string): Promise<{ content: string; respo
     return { content, responseTime }
   } catch (error: any) {
     const responseTime = Date.now() - startTime
-    throw new Error(`GPT-4 Error: ${error.message}`)
+    const errorMsg = error.message || String(error)
+    const errorDetails = error.status ? ` (${error.status})` : ''
+    throw new Error(`GPT-4 Error: ${errorMsg}${errorDetails}`)
   }
 }
