@@ -1,13 +1,21 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openaiInstance: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || 'placeholder-key',
+    })
+  }
+  return openaiInstance
+}
 
 export async function callGPT4(prompt: string): Promise<{ content: string; responseTime: number }> {
   const startTime = Date.now()
 
   try {
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo-preview',
       messages: [{ role: 'user', content: prompt }],

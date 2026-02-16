@@ -1,13 +1,21 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+let anthropicInstance: Anthropic | null = null
+
+function getAnthropic() {
+  if (!anthropicInstance) {
+    anthropicInstance = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY || 'placeholder-key',
+    })
+  }
+  return anthropicInstance
+}
 
 export async function callClaude(prompt: string): Promise<{ content: string; responseTime: number }> {
   const startTime = Date.now()
 
   try {
+    const anthropic = getAnthropic()
     const message = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 2000,
