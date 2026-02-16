@@ -1,12 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-let genAIInstance: GoogleGenerativeAI | null = null
-
 function getGoogleAI() {
-  if (!genAIInstance) {
-    genAIInstance = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || 'placeholder-key')
-  }
-  return genAIInstance
+  const apiKey = process.env.GOOGLE_AI_API_KEY || 'placeholder-key'
+  // Always create a new instance to ensure we use the latest API key
+  return new GoogleGenerativeAI(apiKey)
 }
 
 export async function callGemini(prompt: string): Promise<{ content: string; responseTime: number }> {
@@ -14,7 +11,7 @@ export async function callGemini(prompt: string): Promise<{ content: string; res
 
   try {
     const genAI = getGoogleAI()
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
     const result = await model.generateContent(prompt)
     const response = await result.response
 

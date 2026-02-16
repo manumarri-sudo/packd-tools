@@ -1,14 +1,9 @@
 import OpenAI from 'openai'
 
-let openaiInstance: OpenAI | null = null
-
 function getOpenAI() {
-  if (!openaiInstance) {
-    openaiInstance = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || 'placeholder-key',
-    })
-  }
-  return openaiInstance
+  const apiKey = process.env.OPENAI_API_KEY || 'placeholder-key'
+  // Always create a new instance to ensure we use the latest API key
+  return new OpenAI({ apiKey })
 }
 
 export async function callGPT4(prompt: string): Promise<{ content: string; responseTime: number }> {
@@ -17,7 +12,7 @@ export async function callGPT4(prompt: string): Promise<{ content: string; respo
   try {
     const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 2000,
       temperature: 0.7,

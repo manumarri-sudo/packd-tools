@@ -1,14 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-let anthropicInstance: Anthropic | null = null
-
 function getAnthropic() {
-  if (!anthropicInstance) {
-    anthropicInstance = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || 'placeholder-key',
-    })
-  }
-  return anthropicInstance
+  // Try multiple env var names as fallback
+  const apiKey = process.env.TEST_ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY || 'placeholder-key'
+  // Always create a new instance to ensure we use the latest API key
+  return new Anthropic({ apiKey })
 }
 
 export async function callClaude(prompt: string): Promise<{ content: string; responseTime: number }> {
@@ -17,7 +13,7 @@ export async function callClaude(prompt: string): Promise<{ content: string; res
   try {
     const anthropic = getAnthropic()
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-haiku-20240307',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     })
