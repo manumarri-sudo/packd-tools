@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "git": {
+    "deploymentEnabled": true
+  },
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://dcrfsckfltofpkdyoqps.supabase.co",
+    "NEXT_PUBLIC_APP_URL": "https://packd-tools.vercel.app"
+  }
+}
